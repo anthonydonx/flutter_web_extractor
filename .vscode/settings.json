@@ -1,0 +1,8 @@
+{
+    "dart.lineLength" : 999,
+	"editor.codeActionsOnSave": {
+		"source.organizeImports": true
+	}, 
+    "editor.formatOnSave": true,
+    "files.insertFinalNewline":true
+}
