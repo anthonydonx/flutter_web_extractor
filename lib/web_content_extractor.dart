@@ -12,7 +12,7 @@ class WebContentExtractor {
   }
   // <AttributeName,Selector>
   // Get all[list of attributes] attributes from single page
-  Future<List<Map<String, String>>> getAttributesValuesFromPage(String route, Map<String, String> attributes) async {
+  Future<List<Map<String, String>>> getAttributesValuesFromUrl(String route, Map<String, String> attributes) async {
     List<Map<String, String>> resultData = [];
     Response response = await _loadPage(_baseUrl + route);
     if (response == null) {
@@ -29,18 +29,35 @@ class WebContentExtractor {
   }
 
 // Get list of values from single page
-  Future<List<String>> getValuesForAttibuteFromPage(String route, String listSelector) async {
+  Future<List<String>> getValuesForAttibuteFromUrl(String route, String listSelector) async {
     List<String> resultData = List();
     Response response = await _loadPage(_baseUrl + route);
     if (response == null) {
       throw WebContentExtractor("Can't load webpage $_baseUrl+$route");
     }
     Document document = parse(response.body);
-    List<Element> element = document.querySelectorAll(listSelector); // select list of elements 
+    List<Element> element = document.querySelectorAll(listSelector); // select list of elements
     element.forEach((element) {
       resultData.add(element.innerHtml != null ? element.innerHtml : "NA");
     });
 
+    return Future.value(resultData);
+  }
+
+  // attributes map = <AttributeName,Selector>
+  // Get all[list of attributes] attributes from provided HTML string
+  Future<List<Map<String, String>>> getValuesForAttibuteFromHtml(String html, Map<String, String> attributes) async {
+    List<Map<String, String>> resultData = [];
+    if (html == null) {
+      throw WebContentExtractor("HTML can not be null");
+    }
+    Document document = parse(html); // pass html string as a document
+    attributes.forEach((attributeName, selector) {
+      Map<String, String> tempVal = Map();
+      Element element = document.querySelector(selector); // select div
+      tempVal[attributeName] = element != null ? element.innerHtml : "NA";
+      resultData.add(tempVal);
+    });
     return Future.value(resultData);
   }
 
